@@ -1,6 +1,6 @@
 include config.mk
 
-NYC_ID=ocd-organization/0f63aae8-16fd-4d3c-b525-00747a482cf9
+ORG_ID=ocd-organization/0f63aae8-16fd-4d3c-b525-00747a482cf9
 
 all : abstentions.csv
 
@@ -10,7 +10,6 @@ ocd_ctrl_socket :
 .PHONY : clean
 clean : ocd_ctrl_socket
 	ssh -S $^ -O exit ubuntu@ocd.datamade.us
-
 
 abstentions.csv : ocd_ctrl_socket
 	psql -h $(PG_HOST) -p $(PG_PORT) -d $(PG_DB) -U $(PG_USER) -c \
@@ -23,5 +22,5 @@ abstentions.csv : ocd_ctrl_socket
 	     INNER JOIN opencivicdata_bill \
 	         ON bill_id = opencivicdata_bill.id \
              WHERE option!='yes' AND option!='no' \
-                   AND organization_id='ocd-organization/0f63aae8-16fd-4d3c-b525-00747a482cf9') \
+                   AND organization_id='$(ORG_ID)') \
           TO STDOUT WITH CSV HEADER" > $@
