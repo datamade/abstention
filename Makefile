@@ -14,7 +14,9 @@ clean : ocd_ctrl_socket
 abstentions.csv : ocd_ctrl_socket
 	psql -h $(PG_HOST) -p $(PG_PORT) -d $(PG_DB) -U $(PG_USER) -c \
 	"COPY ( \
-             SELECT voter_name, opencivicdata_bill.identifier, option, motion_text, start_date \
+             SELECT voter_name AS voter, \
+                    opencivicdata_bill.identifier AS identifier, \
+                    option, motion_text, start_date \
              FROM \
 	     opencivicdata_personvote \
              INNER JOIN opencivicdata_voteevent \
@@ -23,4 +25,4 @@ abstentions.csv : ocd_ctrl_socket
 	         ON bill_id = opencivicdata_bill.id \
              WHERE option!='yes' AND option!='no' \
                    AND organization_id='$(ORG_ID)') \
-          TO STDOUT WITH CSV HEADER" > $@
+          TO STDOUT WITH CSV HEADER" | python slugify.py > $@
